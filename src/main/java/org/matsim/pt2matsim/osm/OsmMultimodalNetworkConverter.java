@@ -503,7 +503,8 @@ public class OsmMultimodalNetworkConverter {
 					Set<String> cmodes = new HashSet<>(modes);
 					if (psvLanesForward.mode.equals(Osm.Key.BUS)) {
 						lBus.setAllowedModes(Set.of(Osm.Key.BUS, "pt"));
-						cmodes.remove(Osm.Key.BUS);
+						// Keep bus in allowed modes where car is allowed
+						// cmodes.remove(Osm.Key.BUS);
 					}
 					else if (psvLanesForward.mode.equals(Osm.Key.TAXI)) {
 						lBus.setAllowedModes(Set.of("taxi"));
@@ -512,7 +513,8 @@ public class OsmMultimodalNetworkConverter {
 					else {
 						lBus.setAllowedModes(Set.of(Osm.Key.BUS, "pt", Osm.Key.TAXI));
 						cmodes.remove(Osm.Key.TAXI);
-						cmodes.remove(Osm.Key.BUS);
+						// Keep bus in allowed modes where car is allowed
+						// cmodes.remove(Osm.Key.BUS);
 					}
 					
 					
@@ -570,7 +572,8 @@ public class OsmMultimodalNetworkConverter {
 					Set<String> cmodes = new HashSet<>(modes);
 					if (psvLanesBackward.mode.equals(Osm.Key.BUS)) {
 						lBus.setAllowedModes(Set.of(Osm.Key.BUS, "pt"));
-						cmodes.remove(Osm.Key.BUS);
+						// Keep bus in allowed modes where car is allowed
+						// cmodes.remove(Osm.Key.BUS);
 					}
 					else if (psvLanesBackward.mode.equals(Osm.Key.TAXI)) {
 						lBus.setAllowedModes(Set.of(Osm.Key.TAXI));
@@ -579,7 +582,8 @@ public class OsmMultimodalNetworkConverter {
 					else {
 						lBus.setAllowedModes(Set.of(Osm.Key.BUS, "pt", Osm.Key.TAXI));
 						cmodes.remove(Osm.Key.TAXI);
-						cmodes.remove(Osm.Key.BUS);
+						// Keep bus in allowed modes where car is allowed
+						// cmodes.remove(Osm.Key.BUS);
 					}
 					l.setAllowedModes(cmodes);
 					if (config.parseTurnRestrictions && !osmTurnRestrictions.isEmpty()) {
