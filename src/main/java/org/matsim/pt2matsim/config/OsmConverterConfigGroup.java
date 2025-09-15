@@ -83,6 +83,13 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 		Set<String> railSingleton = Collections.singleton("rail");
 
 		OsmConverterConfigGroup defaultConfig = new OsmConverterConfigGroup();
+
+	    // Set default parameters
+ 	   defaultConfig.addParam("candidateDistanceMultiplier", "3.0");
+	    defaultConfig.addParam("maxLinkCandidateDistance", "250.0");
+	    defaultConfig.addParam("maxTravelCostFactor", "8.0");
+	    defaultConfig.addParam("nLinkThreshold", "10");
+		
 		defaultConfig.addParameterSet(new OsmWayParams(Osm.Key.HIGHWAY, Osm.Value.MOTORWAY, 2, 120.0 / 3.6, 1.0, 2000, true, carSingleton));
 		defaultConfig.addParameterSet(new OsmWayParams(Osm.Key.HIGHWAY, Osm.Value.MOTORWAY_LINK, 1, 80.0 / 3.6, 1.0, 1500, true, carSingleton));
 		defaultConfig.addParameterSet(new OsmWayParams(Osm.Key.HIGHWAY, Osm.Value.TRUNK, 2, 80.0 / 3.6, 1.0, 2000, false, carSingleton));
