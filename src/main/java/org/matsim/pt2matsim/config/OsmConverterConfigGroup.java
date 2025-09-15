@@ -83,13 +83,6 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 		Set<String> railSingleton = Collections.singleton("rail");
 
 		OsmConverterConfigGroup defaultConfig = new OsmConverterConfigGroup();
-
-	    // Set default parameters
- 	   defaultConfig.addParam("candidateDistanceMultiplier", "3.0");
-	    defaultConfig.addParam("maxLinkCandidateDistance", "250.0");
-	    defaultConfig.addParam("maxTravelCostFactor", "8.0");
-	    defaultConfig.addParam("nLinkThreshold", "10");
-		
 		defaultConfig.addParameterSet(new OsmWayParams(Osm.Key.HIGHWAY, Osm.Value.MOTORWAY, 2, 120.0 / 3.6, 1.0, 2000, true, carSingleton));
 		defaultConfig.addParameterSet(new OsmWayParams(Osm.Key.HIGHWAY, Osm.Value.MOTORWAY_LINK, 1, 80.0 / 3.6, 1.0, 1500, true, carSingleton));
 		defaultConfig.addParameterSet(new OsmWayParams(Osm.Key.HIGHWAY, Osm.Value.TRUNK, 2, 80.0 / 3.6, 1.0, 2000, false, carSingleton));
@@ -125,6 +118,64 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 		Set<String> toRemove = matsimConfig.getModules().keySet().stream().filter(module -> !module.equals(OsmConverterConfigGroup.GROUP_NAME)).collect(Collectors.toSet());
 		toRemove.forEach(matsimConfig::removeModule);
 		new ConfigWriter(matsimConfig).write(filename);
+	}
+
+	@Parameter
+	@Comment("After nLinkThreshold link candidates have been found, additional link candidates within [candidateDistanceMultiplier] * [distance to the Nth link] are added to the set. Must be >= 1.")
+	private double candidateDistanceMultiplier = 2.5;
+
+	@Parameter
+	@Comment("The maximal distance [meter] a link candidate is allowed to have from the stop facility.")
+	private double maxLinkCandidateDistance = 200.0;
+
+	@Parameter
+	@Comment("If all paths between two stops have a [travelCost] > [maxTravelCostFactor] * [minTravelCost], an artificial link is created.")
+	private double maxTravelCostFactor = 10.0;
+
+	@Parameter
+	@Comment("Number of link candidates considered for all stops.")
+	private int nLinkThreshold = 15;
+
+	// Add getters and setters
+
+	@StringGetter("candidateDistanceMultiplier")
+	public double getCandidateDistanceMultiplier() {
+	   return candidateDistanceMultiplier;
+	}
+
+	@StringSetter("candidateDistanceMultiplier")
+	public void setCandidateDistanceMultiplier(double candidateDistanceMultiplier) {
+	    this.candidateDistanceMultiplier = candidateDistanceMultiplier;
+	}
+
+	@StringGetter("maxLinkCandidateDistance")
+	public double getMaxLinkCandidateDistance() {
+	    return maxLinkCandidateDistance;
+	}
+
+	@StringSetter("maxLinkCandidateDistance")
+	public void setMaxLinkCandidateDistance(double maxLinkCandidateDistance) {
+	    this.maxLinkCandidateDistance = maxLinkCandidateDistance;
+	}
+
+	@StringGetter("maxTravelCostFactor")
+	public double getMaxTravelCostFactor() {
+	    return maxTravelCostFactor;
+	}
+
+	@StringSetter("maxTravelCostFactor")
+	public void setMaxTravelCostFactor(double maxTravelCostFactor) {
+	    this.maxTravelCostFactor = maxTravelCostFactor;
+	}
+
+	@StringGetter("nLinkThreshold")
+	public int getNLinkThreshold() {
+	    return nLinkThreshold;
+	}
+
+	@StringSetter("nLinkThreshold")
+	public void setNLinkThreshold(int nLinkThreshold) {
+	    this.nLinkThreshold = nLinkThreshold;
 	}
 
 	@StringGetter(OSM_FILE)
