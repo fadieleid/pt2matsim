@@ -5,26 +5,26 @@
 		<!-- After nLinkThreshold link candidates have been found, additional link 
 		candidates within [candidateDistanceMultiplier] * [distance to the Nth link] are added to the set.
 		Must be >= 1. -->
-		<param name="candidateDistanceMultiplier" value="1.6" />
+		<param name="candidateDistanceMultiplier" value="2.5" />
 		<!-- Path to the input network file. Not needed if PTMapper is called within another class. -->
 		<param name="inputNetworkFile" value="" />
 		<!-- Path to the input schedule file. Not needed if PTMapper is called within another class. -->
 		<param name="inputScheduleFile" value="" />
 		<!-- The maximal distance [meter] a link candidate is allowed to have from the stop facility.
 		No link candidates beyond this distance are added. -->
-		<param name="maxLinkCandidateDistance" value="90.0" />
+		<param name="maxLinkCandidateDistance" value="200.0" />
 		<!-- If all paths between two stops have a [travelCost] > [maxTravelCostFactor] * [minTravelCost], 
 		an artificial link is created. If travelCostType is travelTime, minTravelCost is the travel time
 		between stops from the schedule. If travelCostType is 
 		linkLength minTravel cost is the beeline distance. -->
-		<param name="maxTravelCostFactor" value="5.0" />
+		<param name="maxTravelCostFactor" value="10.0" />
 		<!-- All links that do not have a transit route on them are removed, except the ones 
 		listed in this set (typically only car). Separated by comma. -->
 		<param name="modesToKeepOnCleanUp" value="car" />
 		<!-- Number of link candidates considered for all stops, depends on accuracy of stops and desired 
 		performance. Somewhere between 4 and 10 seems reasonable for bus stops, depending on the
 		accuracy of the stop facility coordinates and performance desires. Default: 6 -->
-		<param name="nLinkThreshold" value="6" />
+		<param name="nLinkThreshold" value="15" />
 		<!-- The router that should be used. Possible options are: [SpeedyALT, AStarLandmarks] -->
 		<param name="networkRouter" value="SpeedyALT" />
 		<!-- Defines the number of numOfThreads that should be used for pseudoRouting. Default: 2. -->
