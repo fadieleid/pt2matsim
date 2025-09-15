@@ -120,20 +120,9 @@ public class OsmConverterConfigGroup extends ReflectiveConfigGroup {
 		new ConfigWriter(matsimConfig).write(filename);
 	}
 
-	@Parameter
-	@Comment("After nLinkThreshold link candidates have been found, additional link candidates within [candidateDistanceMultiplier] * [distance to the Nth link] are added to the set. Must be >= 1.")
 	private double candidateDistanceMultiplier = 2.5;
-
-	@Parameter
-	@Comment("The maximal distance [meter] a link candidate is allowed to have from the stop facility.")
 	private double maxLinkCandidateDistance = 200.0;
-
-	@Parameter
-	@Comment("If all paths between two stops have a [travelCost] > [maxTravelCostFactor] * [minTravelCost], an artificial link is created.")
 	private double maxTravelCostFactor = 10.0;
-
-	@Parameter
-	@Comment("Number of link candidates considered for all stops.")
 	private int nLinkThreshold = 15;
 
 	// Add getters and setters
