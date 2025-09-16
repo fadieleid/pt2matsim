@@ -75,7 +75,7 @@ public class PublicTransitMappingConfigGroup extends ReflectiveConfigGroup {
 	private Map<String, Set<String>> transportModeAssignment = new HashMap<>();
 	private Set<String> scheduleFreespeedModes = PublicTransitMappingStrings.ARTIFICIAL_LINK_MODE_AS_SET;
 	private Set<String> modesToKeepOnCleanUp = new HashSet<>();
-	private double maxTravelCostFactor = 5.0;
+	private double maxTravelCostFactor = 10.0;
 	private int numOfThreads = 2;
 	private boolean removeNotUsedStopFacilities = true;
 
@@ -87,9 +87,9 @@ public class PublicTransitMappingConfigGroup extends ReflectiveConfigGroup {
 	private TravelCostType travelCostType = TravelCostType.linkLength;
 
 	private boolean routingWithCandidateDistance = true;
-	private int nLinkThreshold = 6;
-	private double maxLinkCandidateDistance = 90;
-	private double candiateDistanceMulitplier = 1.6;
+	private int nLinkThreshold = 15;
+	private double maxLinkCandidateDistance = 200;
+	private double candidateDistanceMultiplier = 2.5;
 	
 	private RoutingAlgorithmType networkRouter = ControllerConfigGroup.RoutingAlgorithmType.SpeedyALT;
 
@@ -468,12 +468,12 @@ public class PublicTransitMappingConfigGroup extends ReflectiveConfigGroup {
 	 */
 	@StringGetter(CANDIDATE_DISTANCE_MULTIPLIER)
 	public double getCandidateDistanceMultiplier() {
-		return candiateDistanceMulitplier;
+		return candidateDistanceMultiplier;
 	}
 
 	@StringSetter(CANDIDATE_DISTANCE_MULTIPLIER)
 	public void setCandidateDistanceMultiplier(double multiplier) {
-		this.candiateDistanceMulitplier = multiplier < 1 ? 1 : multiplier;
+		this.candidateDistanceMultiplier = multiplier < 1 ? 1 : multiplier;
 	}
 	
 	@StringGetter(NETWORK_ROUTER)
