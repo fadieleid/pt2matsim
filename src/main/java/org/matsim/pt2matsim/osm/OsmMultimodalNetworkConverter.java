@@ -922,6 +922,9 @@ public class OsmMultimodalNetworkConverter {
 	protected void cleanNetwork() {
 	    Set<String> subnetworkModes = new HashSet<>();
 	    List<Network> subnetworks = new LinkedList<>();
+	    // per-mode results, used below to backfill car-routable links into subnetworks that also allow car
+	    Map<String, Network> subnetworksByMode = new HashMap<>();
+	    Map<String, Set<String>> allowedModesByMode = new HashMap<>();
 	    
 	    for (ConfigGroup params : config.getParameterSets(OsmConverterConfigGroup.RoutableSubnetworkParams.SET_NAME)) {
 			OsmConverterConfigGroup.RoutableSubnetworkParams subnetworkParams = (OsmConverterConfigGroup.RoutableSubnetworkParams) params;
@@ -959,8 +962,12 @@ public class OsmMultimodalNetworkConverter {
 					.forEach(link -> link.setAllowedModes(subnetworkModeSingleton));
 			DisallowedNextLinksUtils.clean(subnetwork);
 
+			subnetworksByMode.put(subnetworkMode, subnetwork);
+			allowedModesByMode.put(subnetworkMode, allowedTransportModes);
 			subnetworks.add(subnetwork);
 	    }
+
+	    backfillCarRoutableLinks(subnetworksByMode, allowedModesByMode);
 	    
 		Set<String> remainingModes = new HashSet<>();
 	    for (Link link : network.getLinks().values()) {
@@ -985,6 +992,57 @@ public class OsmMultimodalNetworkConverter {
 		DisallowedNextLinksUtils.clean(combinedNetwork);
 
 	    this.network = combinedNetwork;
+	}
+
+	/**
+	 * For every cleaned subnetwork whose configured {@code allowedTransportModes} includes "car",
+	 * re-add links that are part of the connectivity-cleaned "car" subnetwork but got dropped from
+	 * this subnetwork (e.g. because an OSM tagging mistake left the way with only "car" assigned,
+	 * causing it to sit on the edge of the mode's own reachable component). This trades strict
+	 * per-mode connectivity for guaranteed availability of the whole routable car backbone.
+	 */
+	private static void backfillCarRoutableLinks(Map<String, Network> subnetworksByMode, Map<String, Set<String>> allowedModesByMode) {
+		Network carSubnetwork = subnetworksByMode.get(TransportMode.car);
+		if (carSubnetwork == null) {
+			return;
+		}
+		for (Map.Entry<String, Network> e : subnetworksByMode.entrySet()) {
+			String mode = e.getKey();
+			if (mode.equals(TransportMode.car)) {
+				continue;
+			}
+			Set<String> allowedModes = allowedModesByMode.get(mode);
+			if (allowedModes == null || !allowedModes.contains(TransportMode.car)) {
+				continue;
+			}
+			Network subnetwork = e.getValue();
+			int added = 0;
+			for (Link carLink : carSubnetwork.getLinks().values()) {
+				if (subnetwork.getLinks().containsKey(carLink.getId())) {
+					continue;
+				}
+				for (Node n : List.of(carLink.getFromNode(), carLink.getToNode())) {
+					if (!subnetwork.getNodes().containsKey(n.getId())) {
+						subnetwork.addNode(subnetwork.getFactory().createNode(n.getId(), n.getCoord()));
+					}
+				}
+				Link newLink = subnetwork.getFactory().createLink(carLink.getId(),
+						subnetwork.getNodes().get(carLink.getFromNode().getId()),
+						subnetwork.getNodes().get(carLink.getToNode().getId()));
+				newLink.setLength(carLink.getLength());
+				newLink.setFreespeed(carLink.getFreespeed());
+				newLink.setCapacity(carLink.getCapacity());
+				newLink.setNumberOfLanes(carLink.getNumberOfLanes());
+				newLink.setAllowedModes(Collections.singleton(mode));
+				subnetwork.addLink(newLink);
+				added++;
+			}
+			if (added > 0) {
+				log.info(String.format(
+						"Subnetwork '%s': backfilled %d link(s) from the routable 'car' subnetwork that connectivity cleaning had dropped",
+						mode, added));
+			}
+		}
 	}
 
 	/**
