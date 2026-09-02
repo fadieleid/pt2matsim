@@ -118,6 +118,7 @@ public class LinkCandidateCreatorStandard implements LinkCandidateCreator {
 				Set<Link> tmpCloseLinks = MapUtils.getSet(getCloseLinksKey(transitRoute, previousRouteStop), closeLinksMap);
 				if(tmpCloseLinks.size() == 0) {
 				tmpCloseLinks.addAll(findClosestLinks(previousRouteStop.getStopFacility().getCoord(), null, scheduleTransportMode));
+				}
 				Set<Link> previousLinks = new HashSet<>(tmpCloseLinks);
 
 				for(int i = 1; i < transitRoute.getStops().size(); i++) {
@@ -145,7 +146,12 @@ public class LinkCandidateCreatorStandard implements LinkCandidateCreator {
 
 						// look for closes links in network
 						if(closeLinks.size() == 0) {
-						closeLinks.addAll(findClosestLinks(currentRouteStop.getStopFacility().getCoord(), null, scheduleTransportMode));
+							closeLinks.addAll(findClosestLinks(currentRouteStop.getStopFacility().getCoord(), null, scheduleTransportMode));
+						}
+
+						currentLinks.addAll(closeLinks);
+					}
+
 					/*
 					  Separate links that belong to two subsequent stops
 					 */
