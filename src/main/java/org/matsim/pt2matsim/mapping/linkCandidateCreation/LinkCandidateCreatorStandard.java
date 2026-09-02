@@ -111,14 +111,18 @@ public class LinkCandidateCreatorStandard implements LinkCandidateCreator {
 					transportModeAssignments.put(scheduleTransportMode, networkModes);
 				}
 
+				// ignore mode filtering only when modes are actually assigned; an empty set must still yield no matches
+				Set<String> modesForSearch = networkModes.isEmpty() ? networkModes : null;
+
 				TransitRouteStop previousRouteStop = transitRoute.getStops().get(0);
 
 				stops.put(PublicTransitStop.createId(transitLine, transitRoute, previousRouteStop), new PublicTransitStopImpl(transitLine, transitRoute, previousRouteStop));
 
 				Set<Link> tmpCloseLinks = MapUtils.getSet(getCloseLinksKey(transitRoute, previousRouteStop), closeLinksMap);
 				if(tmpCloseLinks.size() == 0) {
-				tmpCloseLinks.addAll(findClosestLinks(previousRouteStop.getStopFacility().getCoord(), null, scheduleTransportMode));
+					tmpCloseLinks.addAll(findClosestLinks(previousRouteStop.getStopFacility().getCoord(), modesForSearch, scheduleTransportMode));
 				}
+
 				Set<Link> previousLinks = new HashSet<>(tmpCloseLinks);
 
 				for(int i = 1; i < transitRoute.getStops().size(); i++) {
@@ -146,7 +150,7 @@ public class LinkCandidateCreatorStandard implements LinkCandidateCreator {
 
 						// look for closes links in network
 						if(closeLinks.size() == 0) {
-							closeLinks.addAll(findClosestLinks(currentRouteStop.getStopFacility().getCoord(), null, scheduleTransportMode));
+							closeLinks.addAll(findClosestLinks(currentRouteStop.getStopFacility().getCoord(), modesForSearch, scheduleTransportMode));
 						}
 
 						currentLinks.addAll(closeLinks);
@@ -163,7 +167,7 @@ public class LinkCandidateCreatorStandard implements LinkCandidateCreator {
 					previousLinks = currentLinks;
 					previousRouteStop = currentRouteStop;
 				}
-				
+
 				progress.update();
 			}
 		}
@@ -286,7 +290,7 @@ public class LinkCandidateCreatorStandard implements LinkCandidateCreator {
 		}
 		
 		List<Link> closestLinks = new ArrayList<>();
-		Map<Double, Set<Link>> sortedLinks = NetworkTools.findClosestLinks(network, coord, nodeSearchRadiusLocal, null);
+		Map<Double, Set<Link>> sortedLinks = NetworkTools.findClosestLinks(network, coord, nodeSearchRadiusLocal, networkModes);
 
 		
 		int nLink = 0;
